@@ -21,6 +21,15 @@ log_group_name = nginx-server
 * `AWS_LOGFORMAT` default is "%d/%b/%Y:%H:%M:%S %z"
 * `AWS_DURATION` default is "5000"
 * `AWS_GROUPNAME` default is "nginx-server"
+* `AWS_STREAM_NAME` default is the instance_id
+* `AWS_REGION` default is us-east-1 (region where logs are published)
+* `AWS_INITIAL_POSITION` default is start-of-file (other option is end-of-file)
+
+If you have not defined a role for this instance, then you will need to pass
+the AWS keys
+* `AWS_ACCESS_KEY_ID`
+* `AWS_SECRET_ACCESS_KEY`
+
 
 ### Example
 
@@ -32,11 +41,16 @@ docker run -d --name nginx -v /mnt/logs:/var/log/nginx -p 80:80 sergeyzh/centos6
 docker run -d --name awslogs -e AWS_LOGFILE=/mnt/logs/access.log -e AWS_DURATION=10000 -v /mnt/logs:/mnt/logs sergeyzh/awslogs
 ```
 
-Now you can see access logs of your Nginx at [AWS Console](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logs:). 
+Now you can see access logs of your Nginx at [AWS Console](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logs:).
 
 NOTE: Of course you should run it on the Amazon EC2 and you should set IAM role for you instance according [manual](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/QuickStartEC2Instance.html).
+
+If you do  not then run as follows
+
+docker run -d --name awslogs -e AWS_LOGFILE=/var/log/applogs.log -e AWS_DURATION=5000 -e AWS_GROUPNAME=/ci/messaging -e AWS_LOGFORMAT="%Y-%m-%d %H:%M:%S" -v /var/lib/docker/log/myapp/:/var/log awslogs
 
 ### MAINTAINERS
 
 * Ryuta Otaki <otaki.ryuta@classmethod.jp>
 * Sergey Zhukov <sergey@jetbrains.com>
+* David Rosenstark <drosenstark@gmail.com>
